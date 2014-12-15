@@ -952,6 +952,14 @@ if (typeof jQuery === 'undefined') {
                             break;
                         }
                     }
+                    else if ('object' === typeof validateResult && validateResult.status!== undefined) {
+                        $field.data('bv.response.' + validatorName, validateResult);
+                        this.updateMessage(updateAll ? field : $field, validatorName, validateResult.message);
+                        this.updateStatus(updateAll ? field : $field, validateResult.status, validatorName, validateResult.visualDisplay);
+                        if (validateResult.status !== this.STATUS_VALID && !verbose) {
+                            break;
+                        }
+                    }
                     // ... or a boolean value
                     else if ('boolean' === typeof validateResult) {
                         $field.data('bv.response.' + validatorName, validateResult);
@@ -1001,7 +1009,8 @@ if (typeof jQuery === 'undefined') {
          * @param {String} [validatorName] The validator name. If null, the method updates validity result for all validators
          * @returns {BootstrapValidator}
          */
-        updateStatus: function(field, status, validatorName) {
+        updateStatus: function(field, status, validatorName, visualDisplay) {
+            visualDisplay = (typeof visualDisplay === 'boolean')? visualDisplay: true;
             var fields = $([]);
             switch (typeof field) {
                 case 'object':
@@ -1075,12 +1084,21 @@ if (typeof jQuery === 'undefined') {
                     case this.STATUS_INVALID:
                         isValidField = false;
                         this.disableSubmitButtons(true);
-                        $parent.removeClass('has-success').addClass('has-error');
+                        $parent.removeClass('has-success');
+                        if (visualDisplay) {
+                            $parent.addClass('has-error');
+                        }
                         if ($icon) {
-                            $icon.removeClass(this.options.feedbackIcons.valid).removeClass(this.options.feedbackIcons.validating).addClass(this.options.feedbackIcons.invalid).show();
+                            $icon.removeClass(this.options.feedbackIcons.valid).removeClass(this.options.feedbackIcons.validating);
+                            if (visualDisplay) {
+                                $icon.addClass(this.options.feedbackIcons.invalid).show();
+                            }
                         }
                         if ($tab) {
-                            $tab.removeClass('bv-tab-success').addClass('bv-tab-error');
+                            $tab.removeClass('bv-tab-success');
+                            if (visualDisplay) {
+                                $tab.addClass('bv-tab-error');
+                            }
                         }
                         break;
 
@@ -1093,15 +1111,23 @@ if (typeof jQuery === 'undefined') {
                             this.disableSubmitButtons(this.$submitButton ? !this.isValid() : !isValidField);
                             if ($icon) {
                                 $icon
-                                    .removeClass(this.options.feedbackIcons.invalid).removeClass(this.options.feedbackIcons.validating).removeClass(this.options.feedbackIcons.valid)
-                                    .addClass(isValidField ? this.options.feedbackIcons.valid : this.options.feedbackIcons.invalid)
+                                    .removeClass(this.options.feedbackIcons.invalid).removeClass(this.options.feedbackIcons.validating).removeClass(this.options.feedbackIcons.valid);
+                                if (visualDisplay) {
+                                    $icon.addClass(isValidField ? this.options.feedbackIcons.valid : this.options.feedbackIcons.invalid)
                                     .show();
+                                }
                             }
                         }
 
-                        $parent.removeClass('has-error has-success').addClass(this.isValidContainer($parent) ? 'has-success' : 'has-error');
+                        $parent.removeClass('has-error has-success');
+                        if (visualDisplay) {
+                            $parent.addClass(this.isValidContainer($parent) ? 'has-success' : 'has-error');
+                        }
                         if ($tab) {
-                            $tab.removeClass('bv-tab-success').removeClass('bv-tab-error').addClass(this.isValidContainer($tabPane) ? 'bv-tab-success' : 'bv-tab-error');
+                            $tab.removeClass('bv-tab-success').removeClass('bv-tab-error');
+                            if (visualDisplay) {
+                                $tab.addClass(this.isValidContainer($tabPane) ? 'bv-tab-success' : 'bv-tab-error');
+                            }
                         }
                         break;
 
