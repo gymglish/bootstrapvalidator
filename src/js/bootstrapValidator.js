@@ -830,7 +830,7 @@ if (typeof jQuery === 'undefined') {
         disableSubmitButtons: function(disabled) {
             if (!disabled) {
                 this.$form.find(this.options.submitButtons).removeAttr('disabled');
-            } else if (this.options.live !== 'disabled') {
+            } else if (this.options.canDisableSubmitButtons && this.options.live !== 'disabled') {
                 // Don't disable if the live validating mode is disabled
                 this.$form.find(this.options.submitButtons).attr('disabled', 'disabled');
             }
@@ -1823,6 +1823,8 @@ if (typeof jQuery === 'undefined') {
         // The submit buttons selector
         // These buttons will be disabled to prevent the valid form from multiple submissions
         submitButtons: '[type="submit"]',
+        // The plugin can disable the button
+        canDisableSubmitButtons: true,
 
         // The field will not be live validated if its length is less than this number of characters
         threshold: null,
